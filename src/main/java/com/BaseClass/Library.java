@@ -18,7 +18,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
-import io.github.bonigarcia.wdm.WebDriverManager;
+import io.github.bonigarcia.wdm.WebDriverManager; 
 
 public class Library {
 
