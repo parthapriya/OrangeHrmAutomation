@@ -8,8 +8,11 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.openqa.selenium.PageLoadStrategy;
+import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -41,13 +44,24 @@ public class Library {
 	public static void browserSetUp() {
 		logger.info("Starting with Browser Set Up");
 		String browser = properties.getProperty("browser");
+		boolean isHeadless = false;
+				if (properties.getProperty("isHeadless").toLowerCase().equals("true")) {
+					isHeadless=true;
+				}
 		String url = properties.getProperty("url");
 
 		switch (browser.toLowerCase()) {
 		case "chrome":
 			WebDriverManager.chromedriver().setup();
-			driver = new ChromeDriver();
-			logger.info(String.format("Identified the browser as %s. Launching the browser", browser));
+			ChromeOptions chromeOptions = new ChromeOptions();
+			chromeOptions.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
+			chromeOptions.addArguments("enable-automation");
+			chromeOptions.setPageLoadStrategy(PageLoadStrategy.NONE);
+			if (isHeadless) {
+				chromeOptions.setHeadless(isHeadless);
+			}
+			driver = new ChromeDriver(chromeOptions);
+			logger.info(String.format("Identified the browser as %s. Launching the browser in headless %s", browser,isHeadless));
 			break;
 
 		case "firefox":
