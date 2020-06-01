@@ -1,5 +1,6 @@
 package com.BaseClass;
 
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,7 +15,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.ie.InternetExplorerOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class Library {
@@ -45,9 +48,9 @@ public class Library {
 		logger.info("Starting with Browser Set Up");
 		String browser = properties.getProperty("browser");
 		boolean isHeadless = false;
-				if (properties.getProperty("isHeadless").toLowerCase().equals("true")) {
-					isHeadless=true;
-				}
+		if (properties.getProperty("isHeadless").toLowerCase().equals("true")) {
+			isHeadless = true;
+		}
 		String url = properties.getProperty("url");
 
 		switch (browser.toLowerCase()) {
@@ -61,18 +64,30 @@ public class Library {
 				chromeOptions.setHeadless(isHeadless);
 			}
 			driver = new ChromeDriver(chromeOptions);
-			logger.info(String.format("Identified the browser as %s. Launching the browser in headless %s", browser,isHeadless));
+			logger.info(String.format("Identified the browser as %s. Launching the browser in headless %s", browser, isHeadless));
 			break;
 
 		case "firefox":
 			WebDriverManager.firefoxdriver().setup();
-			driver = new FirefoxDriver();
-			logger.info(String.format("Identified the browser as %s. Launching the browser", browser));
+			FirefoxOptions firefoxOptions = new FirefoxOptions();
+			firefoxOptions.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
+			firefoxOptions.addArguments("enable-automation");
+			firefoxOptions.setPageLoadStrategy(PageLoadStrategy.NONE);
+
+			if (isHeadless)
+				firefoxOptions.addArguments("--headless");
+			driver = new FirefoxDriver(firefoxOptions);
+			logger.info(String.format("Identified the browser as %s. Launching the browser in headless %s", browser, isHeadless));
 			break;
 
 		case "ie":
 			WebDriverManager.iedriver().setup();
-			driver = new InternetExplorerDriver();
+			InternetExplorerOptions ieOptions = new InternetExplorerOptions();
+			ieOptions.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
+			ieOptions.setPageLoadStrategy(PageLoadStrategy.NONE);
+			if (isHeadless)
+				logger.info("IE doesn't support headless ");
+			driver = new InternetExplorerDriver(ieOptions);
 			logger.info(String.format("Identified the browser as %s. Launching the browser", browser));
 			break;
 
